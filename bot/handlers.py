@@ -5,7 +5,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, CallbackQuery, PreCheckoutQuery, LabeledPrice
 import environ
 
-from bot.keyboards import get_languages, get_main_menu
+from bot.keyboards import get_languages, get_main_menu, get_registration_and_login_keyboard
 
 from bot.utils import default_languages, user_languages, introduction_template, \
     local_user
@@ -21,6 +21,10 @@ environ.Env.read_env(".env")
 dp = Dispatcher()
 bot = Bot(token=settings.BOT_TOKEN, default=DefaultBotProperties(parse_mode=ParseMode.HTML))
 
+# @dp.message()
+# async def get_image(msg: Message):
+#     await msg.answer(msg.photo[-1].file_id)
+
 
 @dp.message(CommandStart())
 async def welcome(message: Message):
@@ -28,8 +32,24 @@ async def welcome(message: Message):
     user_phone = local_user.get(message.from_user.id, None)
     if user_phone and user_lang:
         await message.answer_photo(
-            photo="AgACAgIAAxkBAANfZyC1l5KceiuaFyIoPsCljhipBdYAAmneMRuhEwhJd1YhKDb_CDoBAAMCAAN5AAM2BA",
+            photo="AgACAgIAAxkBAAIYtWcg00g6GdyujioWIHTgVyhUODX_AAIh6zEbReUJSWhHNoTxx5LMAQADAgADeAADNgQ",
             caption=introduction_template[user_lang], reply_markup=get_main_menu(user_lang))
     else:
         msg = default_languages['welcome_message']
         await message.answer(msg, reply_markup=get_languages())
+
+
+@dp.callback_query(F.data.startswith("lang"))
+async def get_query_languages(call: CallbackQuery):
+    user_id = call.from_user.id
+    user_lang = call.data.split("_")[1]
+    user_languages[user_id] = user_lang
+    user = local_user.get(user_id, None)
+    if user is None:
+        await call.message.answer_photo(
+            photo="AgACAgIAAxkBAAIYtWcg00g6GdyujioWIHTgVyhUODX_AAIh6zEbReUJSWhHNoTxx5LMAQADAgADeAADNgQ",
+            caption=introduction_template[user_lang], reply_markup=get_registration_and_login_keyboard(user_lang))
+    else:
+        await call.message.answer_photo(
+            photo="AgACAgIAAxkBAAIYtWcg00g6GdyujioWIHTgVyhUODX_AAIh6zEbReUJSWhHNoTxx5LMAQADAgADeAADNgQ",
+            caption=introduction_template[user_lang], reply_markup=get_main_menu(user_lang))

@@ -58,7 +58,7 @@ default_languages = {
 
     },
 
-    "ru": {
+    "en": {
         "status": "status",
         "address": "адрес",
         "order_list": "orderсписок заказов",
@@ -75,9 +75,9 @@ default_languages = {
         "individual": "Физическое лицо",
         "legal": "Юридическое лицо",
         "select_user_type": "Выберите тип пользователя",
-        "registration": "Зарегистрироваться",
-        "login": "Войти",
-        "logout": "↩️ Выйти из аккаунта",
+        "registration": "registration",
+        "login": "login",
+        "logout": "↩️ logout",
         "exit": "Вы вышли из своей учетной записи",
         "sign_password": "Введите пароль",
         "company_name": "Введите название кампании",
@@ -110,49 +110,48 @@ user_languages = {}
 local_user = {}
 
 introduction_template = {
-    'ru':
+    'en':
         """
-    💧Chere Water Company представляет <a href="https://t.me/chere_water_bot">Chere Water</a> 💧
+    🔹 Telegram Channel:  <a href="https://t.me/IT_RustamDevPythonMy">Python</a> 
 
-    Решите все вопросы, связанные с водой Chere! 🚰
+    
+    What can the bot do?
+    - Ecommerce and online shopping
+    - Latest and high-quality products
+    - Manage and check your billing
+    - Stay updated on exclusive discounts and promotions
+    - Help with questions and support 
+    🌐 EcommerceBot – the best online bot!
 
-    Что может сделать бот?
-    - Заказ воды
-    - Знать о последних тарифах на воду
-    - Проверка расчетов
-    - Будьте в курсе эксклюзивных скидок и акций
-    - Вопросы и помощь
-    🌐 ChereBot - легкий и быстрый сервис!
+    🏠 Stay at home and enjoy unique services with ease!
 
-    🏠 Оставайтесь дома и пользуйтесь уникальными услугами!
+    🟢 Join now: <a href="https://t.me/IT_RustamDevPythonMy">Python</a>
+    ✉️  Telegram channel: <a href="https://t.me/IT_RustamDevPythonMy">Python</a>
 
-    🟢 Присоединяйтесь прямо сейчас: <a href="https://t.me/chere_water_bot">Chere Water</a>
-    ✉️  Телеграм канал: <a href="https://t.me/chere_water_bot">Chere Water</a>
-
-    Chere - Чистая вода, Здоровая жизнь!
+    
     """,
 
     "uz":
 
         """
-    💧 Chere Suv Kompaniyasi <a href="https://t.me/chere_water_bot">Chere Water</a> ni taqdim etadi 💧
+    Telagram kanal <a href="https://t.me/IT_RustamDevPythonMy">Python</a> 
 
-    Chere suvi bilan bog'liq barcha masalalaringizni hal qiling! 🚰
+    
 
     Bot nimalarni qila oladi?
-    - Suv buyurtma qilish
-    - So'nggi suv tariflarini bilish
+    - Ecommerce and onlayn magazin
+    - So'nggi va sifatli  mahsulotlar
     - Hisob-kitoblarni tekshirish
     - Eksklyuziv chegirmalar va aksiyalar haqida xabardor bo'lish
     - Savollar va yordam
-    🌐 ChereBot – oson va tezkor xizmat! 
+    🌐 EcommerceBot – eng yahshi onlayn bot! 
 
     🏠 Uyda qolib unikal xizmatlardan foydalaning!
 
-    🟢 Hoziroq qo'shiling: <a href="https://t.me/chere_water_bot">Chere Water</a>
-    ✉️ Telegram kanal: <a href="https://t.me/chere_water_bot">Chere Water</a>
+    🟢 Hoziroq qo'shiling: <a href="https://t.me/IT_RustamDevPythonMy">Python</a>
+    ✉️ Telegram kanal: <a href="https://t.me/IT_RustamDevPythonMy">Python</a>
 
-    Chere - Sof Suv, Sog‘lom Hayot!
+    
 
     """
 }

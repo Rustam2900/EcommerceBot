@@ -101,10 +101,9 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'uz'
 LANGUAGES = (
-    ('uz', _('Uzbek')),
-    ('ru', _('Russian'))
+    ('uz', 'Uzbek'),
+    ('ru', 'Russian')
 )
-
 
 TIME_ZONE = 'UTC'
 
@@ -119,12 +118,10 @@ STATIC_ROOT = BASE_DIR / 'static'
 STATIC_URL = '/static/'
 if DEBUG:
     STATICFILES_DIRS = [
-        BASE_DIR.joinpath('staticfiles'),]
+        BASE_DIR.joinpath('staticfiles'), ]
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
-
-
 
 LOCALE_PATHS = [
     BASE_DIR / 'locale/',
