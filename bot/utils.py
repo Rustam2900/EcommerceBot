@@ -33,7 +33,7 @@ default_languages = {
         'exit': "Siz akkauntingizdan chiqdingiz",
         "sign_password": "Parolni kiritng",
         "company_name": "Kampaniya nomini kiriting",
-        "employee_name": "Kampaniya xodimi ism familiyasini kiriting",
+        "employee_name": "xodimi ism familiyasini kiriting",
         "employee_count": "Kampaniyada ishchilar sonini kiriting",
         "company_contact": "Kampaniya telefon raqamini kiriting",
         "working_days": "Kampaniyadagi ish kuni sonini kiriting (haftasiga)",
@@ -81,7 +81,7 @@ default_languages = {
         "exit": "Вы вышли из своей учетной записи",
         "sign_password": "Введите пароль",
         "company_name": "Введите название кампании",
-        "employee_name": "Введите имя и фамилию сотрудника кампании.",
+        "employee_name": "Enter the employee's first and last name",
         "employee_count": "Введите количество работников в кампании.",
         "company_contact": "Введите номер телефона кампании",
         "working_days": "Введите количество рабочих дней в кампании (в неделю)",
@@ -183,3 +183,8 @@ order_text = {
     "uz": "Buyurtma raqami {} \n Buyurtma holati {}",
     "ru": "Номер заказа {} \n Статус заказа {}"
 }
+
+def fix_phone(phone):
+    if "+" not in phone:
+        return f"+{phone}"
+    return phone
