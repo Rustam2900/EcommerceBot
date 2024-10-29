@@ -7,8 +7,8 @@ default_languages = {
                           "Вы не выбрали правильный язык!",
     "welcome_message": "Salom, botimizga xush kelibsiz!\n"
                        "Quyidagi tillardan birini tanlang!\n\n"
-                       "Здравствуйте, добро пожаловать в наш бот!\n"
-                       "Выберите один из языков ниже!",
+                       "Hello, welcome to our bot!\n"
+                       "Choose one of the languages below!",
 
     "uz": {
         "status": "status",
@@ -184,9 +184,3 @@ order_text = {
     "uz": "Buyurtma raqami {} \n Buyurtma holati {}",
     "ru": "Номер заказа {} \n Статус заказа {}"
 }
-
-
-
-
-
-
