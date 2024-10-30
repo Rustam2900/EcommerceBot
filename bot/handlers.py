@@ -97,7 +97,6 @@ async def working_days(message: Message, state: FSMContext):
     state_data = await state.get_data()
     employees_count = int(state_data['employee_count'])
     durations_days = int(state_data['duration_days'])
-    total_water = calculate_total_water(state_data['working_days'], employees_count, durations_days)
     data = {
         "full_name": state_data['name'],
         "username": message.from_user.username,
