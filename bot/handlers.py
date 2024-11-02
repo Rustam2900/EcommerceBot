@@ -13,6 +13,7 @@ from bot.utils import default_languages, user_languages, introduction_template, 
 from django.conf import settings
 from aiogram.client.default import DefaultBotProperties
 from asgiref.sync import sync_to_async
+from bot.db import save_user_language, save_user_info_to_db
 
 from bot.states import UserStates
 
@@ -75,14 +76,15 @@ async def company_contact(message: Message, state: FSMContext):
         phone = fix_phone(message.text)
         await state.update_data(company_contact=phone)
     state_data = await state.get_data()
-    data = {
+    user_data = {
         "full_name": state_data['name'],
+        "phone_number": company_contact,
         "username": message.from_user.username,
         "user_lang": user_lang,
         "telegram_id": user_id,
         "tg_username": f"https://t.me/{message.from_user.username}",
     }
-    await create_user_db(data)
+    await save_user_info_to_db(user_data)
     await message.answer(text="aaa",
-                         reply_markup=get_confirm_button(user_lang))
+                         reply_markup=None)
     await state.clear()
