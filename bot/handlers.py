@@ -1,4 +1,5 @@
 import environ
+import re
 
 from aiogram import Dispatcher, F, Bot
 from aiogram.enums import ParseMode
@@ -16,9 +17,12 @@ from asgiref.sync import sync_to_async
 from bot.db import save_user_language, save_user_info_to_db
 
 from bot.states import UserStates
+from bot.models import CustomUser
 
 dp = Dispatcher()
 bot = Bot(token=settings.BOT_TOKEN, default=DefaultBotProperties(parse_mode=ParseMode.HTML))
+
+phone_number_validator = re.compile(r'^\+998 \(\d{2}\) \d{3} \d{2} \d{2}$')
 
 
 # @dp.message()
@@ -48,43 +52,67 @@ async def get_query_languages(call: CallbackQuery, state: FSMContext):
     user_id = call.from_user.id
     user_lang = call.data.split("_")[1]
 
+    # Foydalanuvchi tilini bazaga saqlash
     await save_user_language(user_id, user_lang)
 
     await bot.answer_callback_query(call.id)
     await state.set_state(UserStates.name)
 
-    await call.message.answer("Quyidagi kurslardan birini tanlang \n\n Выберите один из курсов ниже",
-                              reply_markup=None)
+    # Tilga mos xabar qaytarish
+    text = default_languages[user_lang]['full_name']
+    await call.message.answer(text, reply_markup=None)
 
 
-@dp.callback_query(UserStates.name)
-async def reg_user_contact(call: CallbackQuery, state: FSMContext):
-    user_id = call.from_user.id
-    user_lang = user_languages[user_id]
+@dp.message(UserStates.name)
+async def reg_user_contact(message: Message, state: FSMContext):
+    user_id = message.from_user.id
+    user_lang = user_languages.get(user_id, 'en')  # Foydalanuvchi tili, yo'q bo'lsa, 'en' bo'lsin
+
+    # Foydalanuvchi nomini holatda saqlash
+    await state.update_data(name=message.text)
     await state.set_state(UserStates.contact)
-    await call.message.answer(text=default_languages[user_lang]['employee_name'])
+
+    # Tilga mos xabar qaytarish
+    text = default_languages[user_lang]['contact']
+    await message.answer(text)
 
 
 @dp.message(UserStates.contact)
 async def company_contact(message: Message, state: FSMContext):
     user_id = message.from_user.id
-    user_lang = user_languages[message.from_user.id]
-    if message.text is None:
+    user_lang = user_languages.get(user_id, 'en')  # Foydalanuvchi tilini olish yoki 'en' ni o'rnatish
+
+    # Telefon raqamni olish
+    if message.contact:
         phone = fix_phone(message.contact.phone_number)
-        await state.update_data(company_contact=phone)
     else:
         phone = fix_phone(message.text)
-        await state.update_data(company_contact=phone)
+
+    # Holatda telefon raqamini saqlash
+    await state.update_data(company_contact=phone)
+
+    # Foydalanuvchi ma'lumotlarini olish
     state_data = await state.get_data()
     user_data = {
-        "full_name": state_data['name'],
-        "phone_number": company_contact,
+        "full_name": state_data.get('name'),
+        "phone_number": phone,
         "username": message.from_user.username,
         "user_lang": user_lang,
         "telegram_id": user_id,
         "tg_username": f"https://t.me/{message.from_user.username}",
     }
-    await save_user_info_to_db(user_data)
-    await message.answer(text="aaa",
-                         reply_markup=None)
+
+    # Ma'lumotlarni bazaga saqlash
+    try:
+        await save_user_info_to_db(user_data)
+        # Agar saqlash muvaffaqiyatli bo'lsa, tilga mos xabar jo'natish
+        success_message = default_languages[user_lang].get("successful_registration",
+                                                           "Thank you, registration successful!")
+        await message.answer(text=success_message)
+    except Exception as e:
+        # Xatolik bo'lsa, foydalanuvchiga xabar berish
+        error_message = default_languages[user_lang].get("order_not_created", "Error: Registration failed!")
+        await message.answer(text=error_message)
+
+    # Holatni tozalash
     await state.clear()
