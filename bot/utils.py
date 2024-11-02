@@ -1,4 +1,4 @@
-all_languages = ['en', 'uz']
+all_languages = ['en', 'ru']
 
 message_history = {}
 
@@ -10,55 +10,54 @@ default_languages = {
                        "Hello, welcome to our bot!\n"
                        "Choose one of the languages below!",
 
-    "uz": {
-        "status": "status",
-        "address": "manzil",
-        "order_list": "buyurtmalar",
-        "price": "narxi",
-        "order_number": "order number",
-        "enter_number": "Faqat raqam kiriting!",
-        "order_address": "Iltimos, manzilingizni :",
-        "reminder_days": "Keyingi buyurtmani qachon eslatish kerak (kun)",
-        "order_created": "Buyurtma yaratildi",
-        "order_not_created": "Buyurtma yaratilmadi!",
-        "order_not_found": "Buyurtma topilmadi!",
-        "order": "Buyurtmalarim",
-        "full_name": "To'liq ismingizni kiriting",
-        "individual": "Jismoniy shaxs",
-        "legal": "Yuridik shaxs",
-        "select_user_type": "Foydalanuvchi turini tanlang",
-        "registration": "Ro'yxatdan o'tish",
-        "login": "Kirish",
-        "logout": "↩️ Akkauntdan chiqish",
-        'exit': "Siz akkauntingizdan chiqdingiz",
-        "sign_password": "Parolni kiritng",
-        "company_name": "Kampaniya nomini kiriting",
-        "employee_name": "xodimi ism familiyasini kiriting",
-        "employee_count": "Kampaniyada ishchilar sonini kiriting",
-        "company_contact": "Kampaniya telefon raqamini kiriting",
-        "working_days": "Kampaniyadagi ish kuni sonini kiriting (haftasiga)",
-        "duration_days": "Qancha vaqt mobaynida yetkazib berib turishimizni hohlaysiz? (necha kun)",
-        "successful_registration": "Muvaffaqiyatli ro'yxatdan o'tildi",
-        "successful_login": "Muvaffaqiyatli kirish",
-        "user_not_found": "Foydalanuvchi topilmadi",
-        "contact": "Telefon raqamingizni kiriting",
-        "share_contact": "Kantaktni bo'lishish",
-        "password": "Akkountingiz uchun parol kiriting",
-        "web_app": "📎 Veb ilova",
-        "settings": "⚙️ Sozlamalar",
-        "contact_us": "📲 Biz bilan bog'lanish",
-        "my_orders": "📦 Mening buyurtmalarim",
-        "create_order": "✅ Buyurtma berish",
-        "cancel": "❌ Bekor qilish",
-        "select_language": "Tilni tanlang!",
-        "successful_changed": "Muvaffaqiyatli o'zgartirildi",
-        "contact_us_message": "Bizning manzil:\n{}\n\n"
-                              "Biz bilan bog'laning:\n{}\n{}\n\n"
-                              "Murojaat vaqti:\n{}"
-
+    "en": {
+        "status": "Status",
+        "address": "Address",
+        "order_list": "Orders",
+        "price": "Price",
+        "order_number": "Order Number",
+        "enter_number": "Please enter only numbers!",
+        "order_address": "Please enter your address:",
+        "reminder_days": "When should we remind you for the next order (days)?",
+        "order_created": "Order created",
+        "order_not_created": "Order was not created!",
+        "order_not_found": "Order not found!",
+        "order": "My Orders",
+        "full_name": "Enter your full name",
+        "individual": "Individual",
+        "legal": "Legal Entity",
+        "select_user_type": "Select user type",
+        "registration": "Registration",
+        "login": "Login",
+        "logout": "↩️ Logout",
+        "exit": "You have logged out of your account",
+        "sign_password": "Enter password",
+        "company_name": "Enter company name",
+        "employee_name": "Enter employee's full name",
+        "employee_count": "Enter the number of employees in the company",
+        "company_contact": "Enter the company's phone number",
+        "working_days": "Enter the number of working days per week",
+        "duration_days": "How long would you like us to deliver? (days)",
+        "successful_registration": "Successfully registered",
+        "successful_login": "Login successful",
+        "user_not_found": "User not found",
+        "contact": "Enter your phone number",
+        "share_contact": "Share contact",
+        "password": "Enter a password for your account",
+        "web_app": "📎 Web App",
+        "settings": "⚙️ Settings",
+        "contact_us": "📲 Contact Us",
+        "my_orders": "📦 My Orders",
+        "create_order": "✅ Place Order",
+        "cancel": "❌ Cancel",
+        "select_language": "Select language!",
+        "successful_changed": "Successfully changed",
+        "contact_us_message": "Our address:\n{}\n\n"
+                              "Contact us:\n{}\n{}\n\n"
+                              "Working hours:\n{}"
     },
 
-    "en": {
+    "ru": {
         "status": "status",
         "address": "адрес",
         "order_list": "orderсписок заказов",
@@ -75,13 +74,13 @@ default_languages = {
         "individual": "Физическое лицо",
         "legal": "Юридическое лицо",
         "select_user_type": "Выберите тип пользователя",
-        "registration": "registration",
-        "login": "login",
-        "logout": "↩️ logout",
+        "registration": "Зарегистрироваться",
+        "login": "Войти",
+        "logout": "↩️ Выйти из аккаунта",
         "exit": "Вы вышли из своей учетной записи",
         "sign_password": "Введите пароль",
         "company_name": "Введите название кампании",
-        "employee_name": "Enter the employee's first and last name",
+        "employee_name": "Введите имя и фамилию сотрудника кампании.",
         "employee_count": "Введите количество работников в кампании.",
         "company_contact": "Введите номер телефона кампании",
         "working_days": "Введите количество рабочих дней в кампании (в неделю)",
@@ -131,7 +130,7 @@ introduction_template = {
     
     """,
 
-    "uz":
+    "ru":
 
         """
     Telagram kanal <a href="https://t.me/IT_RustamDevPythonMy">Python</a> 
@@ -183,6 +182,7 @@ order_text = {
     "uz": "Buyurtma raqami {} \n Buyurtma holati {}",
     "ru": "Номер заказа {} \n Статус заказа {}"
 }
+
 
 def fix_phone(phone):
     if "+" not in phone:
