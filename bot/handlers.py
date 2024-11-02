@@ -22,7 +22,7 @@ from bot.models import CustomUser
 dp = Dispatcher()
 bot = Bot(token=settings.BOT_TOKEN, default=DefaultBotProperties(parse_mode=ParseMode.HTML))
 
-phone_number_validator = re.compile(r'^\+998 \(\d{2}\) \d{3} \d{2} \d{2}$')
+phone_number_validator = re.compile(r'^\+998 \d{2} \d{3} \d{2} \d{2}$')
 
 
 # @dp.message()
@@ -82,6 +82,13 @@ async def company_contact(message: Message, state: FSMContext):
         phone = fix_phone(message.contact.phone_number)
     else:
         phone = fix_phone(message.text)
+
+    if not phone_number_validator.match(phone):
+        error_message = default_languages[user_lang].get(
+            "enter_number", "Please enter a valid phone number format: +998 XX XXX XX XX"
+        )
+        await message.answer(error_message)
+        return
 
     await state.update_data(company_contact=phone)
 
