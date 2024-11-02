@@ -13,8 +13,8 @@ class CustomUser(models.Model):
     user_lang = models.CharField(_("user language"), blank=True, null=True, max_length=10)
     telegram_id = models.CharField(_("telegram id"), blank=True, null=True, max_length=255, unique=True)
     tg_username = models.CharField(_("telegram username"), blank=True, null=True, max_length=255, unique=True)
+    created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         verbose_name = _("User")
         verbose_name_plural = _("Users")
-    

@@ -3,10 +3,10 @@ all_languages = ['en', 'ru']
 message_history = {}
 
 default_languages = {
-    "language_not_found": "Siz toʻgʻri tilni tanlamadingiz!\n"
+    "language_not_found": "You have not selected the correct language!\n"
                           "Вы не выбрали правильный язык!",
-    "welcome_message": "Salom, botimizga xush kelibsiz!\n"
-                       "Quyidagi tillardan birini tanlang!\n\n"
+    "welcome_message": "Здравствуйте, добро пожаловать в наш бот!\n"
+                       "Выберите один из языков ниже!\n\n"
                        "Hello, welcome to our bot!\n"
                        "Choose one of the languages below!",
 
