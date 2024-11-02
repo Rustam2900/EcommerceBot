@@ -8,13 +8,74 @@ from bot.validators import phone_number_validator
 class CustomUser(models.Model):
     full_name = models.CharField(_("full name"), blank=True, max_length=255)
     username = models.CharField(_("username"), blank=True, max_length=255, null=True)
-    phone_number = models.CharField(_("phone number"), blank=True, unique=True, validators=[phone_number_validator],
+    phone_number = models.CharField(blank=True, unique=True, validators=[phone_number_validator],
                                     max_length=20)
-    user_lang = models.CharField(_("user language"), blank=True, null=True, max_length=10)
-    telegram_id = models.CharField(_("telegram id"), blank=True, null=True, max_length=255, unique=True)
+    user_lang = models.CharField(blank=True, null=True, max_length=10)
+    telegram_id = models.CharField(blank=True, null=True, max_length=255, unique=True)
     tg_username = models.CharField(_("telegram username"), blank=True, null=True, max_length=255, unique=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         verbose_name = _("User")
         verbose_name_plural = _("Users")
+
+
+class Category(models.Model):
+    name = models.CharField(_("name"), max_length=100, unique=True)
+
+    class Meta:
+        verbose_name = _("Category")
+        verbose_name_plural = _("Categories")
+
+    def __str__(self):
+        return self.name
+
+
+class Product(models.Model):
+    category = models.ForeignKey(Category, related_name='products', on_delete=models.CASCADE)
+    name = models.CharField(_("name"), max_length=200)
+    price = models.DecimalField(max_digits=10, decimal_places=2)
+    size = models.CharField(max_length=50, blank=True)
+    color = models.CharField(_("color"), max_length=50, blank=True)
+    description = models.TextField(_("description"), blank=True, null=True)
+    delivery_time = models.CharField(max_length=100)  # Yetkazib berish vaqti
+
+    def __str__(self):
+        return self.name
+
+
+class Order(models.Model):
+    class OrderStatus(models.TextChoices):
+        CREATED = 'CREATED', _('Created')
+        DELIVERED = 'DELIVERED', _('Delivered')
+        CANCELLED = 'CANCELLED', _('Cancelled')
+
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='orders')
+    status = models.CharField(_("status"), max_length=20, choices=OrderStatus.choices, default=OrderStatus.CREATED)
+    address = models.CharField(_('address'), max_length=255)
+    latitude = models.DecimalField(max_digits=10, decimal_places=8, blank=True, null=True)
+    longitude = models.DecimalField(max_digits=11, decimal_places=8, blank=True, null=True)
+    phone_number = models.CharField(max_length=20, validators=[phone_number_validator])
+    total_price = models.DecimalField(decimal_places=2, max_digits=10)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = _("Order")
+        verbose_name_plural = _("Orders")
+
+    def __str__(self):
+        return f"Order #{self.id} - {self.user.full_name}"
+
+
+class CartItem(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='cart_items')
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='cart_items')
+    order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='cart_items', blank=True, null=True)
+    quantity = models.PositiveIntegerField(default=1)
+    is_visible = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    size = models.CharField(max_length=50, blank=True)
+    color = models.CharField(_("color"), max_length=50, blank=True)
+
+    def __str__(self):
+        return f"{self.product.name} - {self.user.full_name}"
