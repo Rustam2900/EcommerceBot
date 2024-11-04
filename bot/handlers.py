@@ -1,20 +1,20 @@
 import environ
 import re
-
+from aiogram import types
 from aiogram import Dispatcher, F, Bot
 from aiogram.enums import ParseMode
 from aiogram.filters import CommandStart
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, CallbackQuery
-
-from bot.keyboards import get_languages, get_main_menu
+from bot.models import Order
+from bot.keyboards import get_languages, get_main_menu,get_user_contacts
 
 from bot.utils import default_languages, user_languages, introduction_template, \
-    local_user, fix_phone
+    local_user, fix_phone, order_text
 from django.conf import settings
 from aiogram.client.default import DefaultBotProperties
 from asgiref.sync import sync_to_async
-from bot.db import save_user_language, save_user_info_to_db
+from bot.db import save_user_language, save_user_info_to_db, get_my_orders
 
 from bot.states import UserStates
 from bot.models import CustomUser
@@ -33,11 +33,10 @@ phone_number_validator = re.compile(r'^\+998 \d{2} \d{3} \d{2} \d{2}$')
 @dp.message(CommandStart())
 async def welcome(message: Message):
     user_id = message.from_user.id
-
     user = await CustomUser.objects.filter(telegram_id=user_id).afirst()
 
     if user and user.user_lang:
-        main_menu_markup = await get_main_menu(user.user_lang)
+        main_menu_markup = get_main_menu(user.user_lang)
         await message.answer(
             text=introduction_template[user.user_lang],
             reply_markup=main_menu_markup
@@ -69,7 +68,10 @@ async def reg_user_contact(message: Message, state: FSMContext):
     await state.update_data(name=message.text)
     await state.set_state(UserStates.contact)
 
-    text = default_languages[user_lang]['contact']
+    # text = default_languages[user_lang]['contact']
+    # , reply_markup=get_user_contacts(user_lang)
+    text = await message.answer(text=default_languages[user_lang]['contact'], reply_markup=get_user_contacts(user_lang))
+
     await message.answer(text)
 
 
@@ -106,9 +108,64 @@ async def company_contact(message: Message, state: FSMContext):
         await save_user_info_to_db(user_data)
         success_message = default_languages[user_lang].get("successful_registration",
                                                            "Thank you, registration successful!")
-        await message.answer(text=success_message)
+        await message.answer(text=success_message, reply_markup=get_main_menu(user_lang))
+
     except Exception as e:
         error_message = default_languages[user_lang].get("order_not_created", "Error: Registration failed!")
         await message.answer(text=error_message)
 
     await state.clear()
+
+
+
+@dp.message(F.text.in_(["📲 Contact us", "📲 Связаться с нами"]))
+async def contact_us(message: Message):
+    user_id = message.from_user.id
+    user_lang = user_languages.get(user_id, 'en')
+
+
+    contact_info = f"{default_languages[user_lang]['contact_us']}\n" \
+                   f"Address: Your Address Here\n" \
+                   f"Email: Contact Email Here\n" \
+                   f"Phone: Your Phone Number Here\n" \
+                   f"Working Hours: Your Working Hours Here"
+    
+    await message.answer(contact_info)
+
+@dp.message(F.text.in_(["📦 My orders", "📦 Мои заказы"]))
+async def get_orders(message: Message):
+    user_id = message.from_user.id
+    phone_number = message.from_user.id
+    user_lang = user_languages.get(user_id, 'en')
+    my_orders = await get_my_orders(phone_number)
+    msg = ""
+    if my_orders:
+        for order in my_orders:
+            msg += f"{order_text[user_lang].format(order.order_number, order.status)}\n"
+            msg += "----------------------------\n"
+        await message.answer(text=f"{default_languages[user_lang]['order']}\n {msg}")
+    else:
+        await message.answer(text=default_languages[user_lang]['order_not_found'],
+                             reply_markup=get_main_menu(user_lang))
+
+# @dp.message(F.text.in_(["📦 My orders", "📦 Мои заказы"]))
+# async def get_orders(message: Message):
+#     user_id = message.from_user.id
+#     phone_number = message.from_user.id
+#     phone_number = await phone_number(user_id)  # Correctly get phone number
+#     user_lang = user_languages.get(user_id, 'en')
+
+#     print(f"User ID: {user_id}, Phone Number: {phone_number}")  # Debugging line
+
+#     my_orders = await get_my_orders(phone_number)
+#     print(f"My Orders: {my_orders}")  # Debugging line
+
+#     msg = ""
+#     if my_orders:
+#         for order in my_orders:
+#             msg += f"{order_text[user_lang].format(order[1], order[2])}\n"  # Adjust indexing based on your order structure
+#             msg += "----------------------------\n"
+#         await message.answer(text=f"{default_languages[user_lang]['order']}\n{msg}")
+#     else:
+#         await message.answer(text=default_languages[user_lang]['order_not_found'],
+#                              reply_markup=get_main_menu(user_lang))

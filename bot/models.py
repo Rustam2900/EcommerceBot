@@ -65,6 +65,7 @@ class Order(models.Model):
 
     def __str__(self):
         return f"Order #{self.id} - {self.user.full_name}"
+    
 
 
 class CartItem(models.Model):

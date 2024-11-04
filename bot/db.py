@@ -1,4 +1,4 @@
-from bot.models import CustomUser
+from bot.models import CustomUser, Order
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from asgiref.sync import sync_to_async
 from django.db import IntegrityError
@@ -40,3 +40,7 @@ def save_user_info_to_db(user_data):
         return new_user
     except IntegrityError:
         raise Exception("User already exists")
+    
+@sync_to_async
+def get_my_orders(phone_number):
+    return list(Order.objects.all().filter(phone_number=phone_number))
