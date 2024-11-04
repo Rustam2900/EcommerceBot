@@ -65,7 +65,6 @@ class Order(models.Model):
 
     def __str__(self):
         return f"Order #{self.id} - {self.user.full_name}"
-    
 
 
 class CartItem(models.Model):
@@ -77,6 +76,25 @@ class CartItem(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     size = models.CharField(max_length=50, blank=True)
     color = models.CharField(_("color"), max_length=50, blank=True)
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+
+    def calculate_amount(self):
+        if self.product and self.quantity:
+            self.amount = self.product.price * self.quantity
+        else:
+            self.amount = 0
+        return self.amount
 
     def __str__(self):
         return f"{self.product.name} - {self.user.full_name}"
+
+
+class Payment(models.Model):
+    user_id = models.IntegerField(unique=True)
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    iyzico_payment_id = models.CharField(max_length=100, null=True, blank=True)
+    status = models.CharField(max_length=20, default="pending")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Payment {self.id} - Status: {self.status}"

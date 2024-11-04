@@ -150,6 +150,10 @@ LOCALE_PATHS = [
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 BOT_TOKEN = env.str('BOT_TOKEN')
 
+IYZIPAY_API_KEY = env.str("IYZIPAY_API_KEY")
+IYZIPAY_SECRET_KEY = env.str("IYZIPAY_SECRET_KEY")
+IYZIPAY_BASE_URL = "https://sandbox-api.iyzipay.com"  # Sandbox uchun
+
 JAZZMIN_SETTINGS = {
     "site_title": "Library Admin",
     "site_header": "Library",
