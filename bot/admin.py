@@ -27,7 +27,7 @@ class ProductAdmin(TranslationAdmin):
 
 @admin.register(Order)
 class OrderAdmin(TranslationAdmin):
-    list_display = ('user', 'status', 'total_price', 'created_at')
+    list_display = ('user', 'status', 'total_price', 'created_at','phone_number')
     list_filter = ('status', 'created_at')
     search_fields = ('user__username', 'address', 'phone_number')
 
