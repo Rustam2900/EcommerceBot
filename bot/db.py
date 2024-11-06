@@ -40,7 +40,17 @@ def save_user_info_to_db(user_data):
         return new_user
     except IntegrityError:
         raise Exception("User already exists")
-    
+
+
 @sync_to_async
-def get_my_orders(phone_number):
-    return list(Order.objects.all().filter(phone_number=phone_number))
+def get_my_orders(user_telegram_id):
+    try:
+        user = CustomUser.objects.get(telegram_id=user_telegram_id)
+        orders = Order.objects.filter(user=user)
+        return list(orders)
+    except CustomUser.DoesNotExist:
+        print(f"User with telegram_id {user_telegram_id} not found.")
+        return []
+    except Exception as e:
+        print(f"Error retrieving orders for user {user_telegram_id}: {e}")
+        return []

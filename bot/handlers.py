@@ -133,15 +133,27 @@ async def contact_us(message: Message):
 @dp.message(F.text.in_(["📦 My orders", "📦 Мои заказы"]))
 async def get_orders(message: Message):
     user_id = message.from_user.id
-    phone_number = message.from_user.id
     user_lang = user_languages.get(user_id, 'en')
-    my_orders = await get_my_orders(phone_number)
+
+    my_orders = await get_my_orders(user_id)
+
+    if not my_orders:
+        await message.answer(
+            text=default_languages[user_lang]['order_not_found'],
+            reply_markup=get_main_menu(user_lang)
+        )
+        return
+
     msg = ""
-    if my_orders:
-        for order in my_orders:
-            msg += f"{order_text[user_lang].format(order.order_number, order.status)}\n"
-            msg += "----------------------------\n"
-        await message.answer(text=f"{default_languages[user_lang]['order']}\n {msg}")
-    else:
-        await message.answer(text=default_languages[user_lang]['order_not_found'],
-                             reply_markup=get_main_menu(user_lang))
+    sorted_orders = sorted(my_orders, key=lambda order: order.created_at, reverse=True)
+
+    for order in sorted_orders:
+        msg += f"Order #{order.id}\n"
+        msg += f"Status: {order.get_status_display()}\n"
+        msg += f"Address: {order.address}\n"
+        msg += f"Phone: {order.phone_number}\n"
+        msg += f"Total Price: {order.total_price} USD\n"
+        msg += f"Created At: {order.created_at.strftime('%Y-%m-%d %H:%M:%S')}\n"
+        msg += "----------------------------\n"
+
+    await message.answer(text=f"{default_languages[user_lang]['order']}\n {msg}")
