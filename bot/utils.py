@@ -6,11 +6,12 @@ default_languages = {
     "language_not_found": "You have not selected the correct language!\n"
                           "Вы не выбрали правильный язык!",
     "welcome_message": "Hello, welcome to our bot!\n"
-                       "Choose one of the languages ​​below!\n\n"
+                       "Choose one of the languages below!\n\n"
                        "Здравствуйте, добро пожаловать в наш бот!\n"
                        "Выберите один из языков ниже!",
 
     "en": {
+    "sorry": "Sorry, please try another number",
     "address": "address",
     "order_list": "orders",
     "price": "price",
@@ -49,6 +50,7 @@ default_languages = {
     },
 
     "ru": {
+    "sorry": "Извините, пожалуйста, попробуйте другой номер",
     "address": "адрес",
     "order_list": "заказы",
     "price": "цена",

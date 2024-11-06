@@ -50,6 +50,7 @@ async def welcome(message: Message):
 async def get_query_languages(call: CallbackQuery, state: FSMContext):
     user_id = call.from_user.id
     user_lang = call.data.split("_")[1]
+    user_languages[user_id] = user_lang
 
     await save_user_language(user_id, user_lang)
 
@@ -63,13 +64,13 @@ async def get_query_languages(call: CallbackQuery, state: FSMContext):
 @dp.message(UserStates.name)
 async def reg_user_contact(message: Message, state: FSMContext):
     user_id = message.from_user.id
-    user_lang = user_languages.get(user_id, 'en')
+    user_lang = user_languages.get(user_id, 'en')  # Foydalanuvchining tilini olish
 
     await state.update_data(name=message.text)
     await state.set_state(UserStates.contact)
 
-    text = await message.answer(text=default_languages[user_lang]['contact'], reply_markup=None)
-
+    # Foydalanuvchining tiliga qarab 'contact' matnini olish
+    text = default_languages.get(user_lang, {}).get('contact', 'Please enter your phone number')
     await message.answer(text)
 
 
@@ -109,7 +110,7 @@ async def company_contact(message: Message, state: FSMContext):
         await message.answer(text=success_message, reply_markup=get_main_menu(user_lang))
 
     except Exception as e:
-        error_message = default_languages[user_lang].get("order_not_created", "Error: Registration failed!")
+        error_message = default_languages[user_lang].get("sorry", "Error: Registration failed!")
         await message.answer(text=error_message)
 
     await state.clear()
