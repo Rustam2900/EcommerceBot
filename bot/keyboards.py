@@ -9,18 +9,11 @@ def get_languages(flag="lang"):
     ])
     return keyboard
 
-# def get_user_contacts(user_language):
-#     keyboard = ReplyKeyboardMarkup(keyboard=[
-#         [KeyboardButton(text=default_languages[user_language]['share_contact'], request_contact=True)],
-#     ], resize_keyboard=True)
-#
-#     return keyboard
-
 
 def get_main_menu(language):
     main_menu_keyboard = ReplyKeyboardMarkup(keyboard=[
         [
-            KeyboardButton(text=default_languages[language]['categories'],),
+            KeyboardButton(text=default_languages[language]['categories'], ),
             KeyboardButton(text=default_languages[language]['contact_us']),
             KeyboardButton(text=default_languages[language]['my_orders'])
         ]

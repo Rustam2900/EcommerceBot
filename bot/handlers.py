@@ -14,10 +14,12 @@ from bot.utils import default_languages, user_languages, introduction_template, 
 from django.conf import settings
 from aiogram.client.default import DefaultBotProperties
 from asgiref.sync import sync_to_async
-from bot.db import save_user_language, save_user_info_to_db, get_my_orders
+from bot.db import save_user_language, save_user_info_to_db, get_my_orders, get_all_categories, get_user_language
 
 from bot.states import UserStates
-from bot.models import CustomUser
+from bot.models import CustomUser, Category
+
+from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 dp = Dispatcher()
 bot = Bot(token=settings.BOT_TOKEN, default=DefaultBotProperties(parse_mode=ParseMode.HTML))
@@ -157,3 +159,25 @@ async def get_orders(message: Message):
         msg += "----------------------------\n"
 
     await message.answer(text=f"{default_languages[user_lang]['order']}\n {msg}")
+
+
+@dp.message(F.text.in_(["Categories", "Категории"]))
+async def get_categories(message: Message):
+    user_id = message.from_user.id
+    user_lang = await get_user_language(user_id)
+    print(f"User language: {user_lang}")
+    categories = await get_all_categories()
+    inline_kb = InlineKeyboardMarkup(row_width=2, inline_keyboard=[])
+    inline_buttons = []
+
+    for category in categories:
+        if user_lang == 'ru':
+            category_name = category.name_ru
+        else:
+            category_name = category.name_en
+        inline_buttons.append(InlineKeyboardButton(text=category_name, callback_data=f"category_{category.id}"))
+    inline_kb.inline_keyboard = [inline_buttons[i:i+2] for i in range(0, len(inline_buttons), 2)]
+    await message.answer(
+        text="Please select a category:",
+        reply_markup=inline_kb
+    )
