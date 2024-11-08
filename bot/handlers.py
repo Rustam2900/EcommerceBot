@@ -176,8 +176,26 @@ async def get_categories(message: Message):
         else:
             category_name = category.name_en
         inline_buttons.append(InlineKeyboardButton(text=category_name, callback_data=f"category_{category.id}"))
-    inline_kb.inline_keyboard = [inline_buttons[i:i+2] for i in range(0, len(inline_buttons), 2)]
+    inline_kb.inline_keyboard = [inline_buttons[i:i + 2] for i in range(0, len(inline_buttons), 2)]
     await message.answer(
         text="Please select a category:",
         reply_markup=inline_kb
     )
+
+
+@dp.callback_query(lambda call: call.data.startswith("category_"))
+async def get_products_by_category(call: CallbackQuery):
+    user_id = call.from_user.id
+    user_lang = await get_user_language(user_id)
+    category_id = int(call.data.split("_")[1])
+
+    products = await get_products_by_category(category_id)
+    inline_kb = InlineKeyboardMarkup(row_width=2)
+    inline_buttons = []
+
+    for product in products:
+        product_name = product.name_ru if user_lang == 'ru' else product.name_en
+        inline_buttons.append(InlineKeyboardButton(text=product_name, callback_data=f"product_{product.id}"))
+
+    inline_kb.add(*inline_buttons)
+    await call.message.edit_text("Mahsulotlar:", reply_markup=inline_kb)  # Mahsulotlarni chiqarish
