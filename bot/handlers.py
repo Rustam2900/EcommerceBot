@@ -1,4 +1,3 @@
-import environ
 import re
 from aiogram import types
 from aiogram import Dispatcher, F, Bot
