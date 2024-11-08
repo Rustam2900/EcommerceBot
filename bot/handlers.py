@@ -1,5 +1,4 @@
 import re
-from aiogram import types
 from aiogram import Dispatcher, F, Bot
 from aiogram.enums import ParseMode
 from aiogram.filters import CommandStart
