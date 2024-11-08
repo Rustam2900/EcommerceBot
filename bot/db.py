@@ -1,5 +1,4 @@
 from bot.models import CustomUser, Order, Category
-from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from asgiref.sync import sync_to_async
 from django.db import IntegrityError
 

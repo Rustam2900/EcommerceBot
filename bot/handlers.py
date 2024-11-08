@@ -64,12 +64,11 @@ async def get_query_languages(call: CallbackQuery, state: FSMContext):
 @dp.message(UserStates.name)
 async def reg_user_contact(message: Message, state: FSMContext):
     user_id = message.from_user.id
-    user_lang = user_languages.get(user_id, 'en')  # Foydalanuvchining tilini olish
+    user_lang = user_languages.get(user_id, 'en')
 
     await state.update_data(name=message.text)
     await state.set_state(UserStates.contact)
 
-    # Foydalanuvchining tiliga qarab 'contact' matnini olish
     text = default_languages.get(user_lang, {}).get('contact', 'Please enter your phone number')
     await message.answer(text)
 
