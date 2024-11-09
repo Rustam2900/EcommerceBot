@@ -38,7 +38,7 @@ class Product(models.Model):
     size = models.CharField(max_length=50, blank=True)
     color = models.CharField(_("color"), max_length=50, blank=True)
     description = models.TextField(_("description"), blank=True, null=True)
-    delivery_time = models.CharField(max_length=100)  # Yetkazib berish vaqti
+    delivery_time = models.CharField(max_length=100)
 
     def __str__(self):
         return self.name

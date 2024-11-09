@@ -1,4 +1,4 @@
-from bot.models import CustomUser, Order, Category
+from bot.models import CustomUser, Order, Category, Product, CartItem
 from asgiref.sync import sync_to_async
 from django.db import IntegrityError
 
@@ -65,8 +65,57 @@ def get_all_categories():
 @sync_to_async
 def get_user_language(user_id):
     try:
-        # Use the correct field, likely 'telegram_id' instead of 'user_id'
         user = CustomUser.objects.get(telegram_id=user_id)
         return user.user_lang
     except CustomUser.DoesNotExist:
         return 'en'
+
+
+@sync_to_async
+def fetch_products_by_category(category_id):
+    return list(
+        Product.objects.filter(category_id=category_id).all()
+    )
+
+
+@sync_to_async
+def get_product_detail(product_id):
+    return Product.objects.get(id=product_id)
+
+
+@sync_to_async
+def add_to_cart(user_id, product_id, color, size, quantity):
+    product = Product.objects.get(id=product_id)
+    user = CustomUser.objects.get(telegram_id=user_id)
+    amount = product.price * quantity
+
+    CartItem.objects.create(
+        user=user,
+        product=product,
+        color=color,
+        size=size,
+        quantity=quantity,
+        amount=amount
+    )
+
+
+@sync_to_async
+def get_cart_items(user_id):
+    return list(CartItem.objects.filter(user__telegram_id=user_id, order__isnull=True).select_related('product'))
+
+
+@sync_to_async
+def create_order(user_id):
+    user = CustomUser.objects.get(telegram_id=user_id)
+    return Order.objects.create(user=user, total_price=0)
+
+
+@sync_to_async
+def link_cart_items_to_order(user_id, order):
+    cart_items = CartItem.objects.filter(user__telegram_id=user_id, order__isnull=True)
+    total_price = sum(item.amount for item in cart_items)
+
+    cart_items.update(order=order)
+
+    order.total_price = total_price
+    order.save()

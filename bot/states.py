@@ -7,3 +7,7 @@ class UserStates(StatesGroup):
 
 
 
+class OrderState(StatesGroup):
+    waiting_for_color = State()
+    waiting_for_size = State()
+    waiting_for_quantity = State()

@@ -11,6 +11,7 @@ default_languages = {
                        "Выберите один из языков ниже!",
 
     "en": {
+    "cart": "basket",
     "sorry": "Sorry, please try another number",
     "address": "address",
     "order_list": "orders",
@@ -50,6 +51,7 @@ default_languages = {
     },
 
     "ru": {
+    "cart": "корзина",
     "sorry": "Извините, пожалуйста, попробуйте другой номер",
     "address": "адрес",
     "order_list": "заказы",
