@@ -11,7 +11,6 @@ class CustomUserAdmin(TranslationAdmin):
     search_fields = ('username', 'phone_number')
 
 
-
 @admin.register(Category)
 class CategoryAdmin(TranslationAdmin):
     list_display = ('name',)
@@ -27,7 +26,7 @@ class ProductAdmin(TranslationAdmin):
 
 @admin.register(Order)
 class OrderAdmin(TranslationAdmin):
-    list_display = ('user', 'status', 'total_price', 'created_at','phone_number')
+    list_display = ('user', 'status', 'total_price', 'created_at', 'phone_number')
     list_filter = ('status', 'created_at')
     search_fields = ('user__username', 'address', 'phone_number')
 
@@ -38,8 +37,8 @@ class CartItemAdmin(TranslationAdmin):
     list_filter = ('user', 'product', 'is_visible')
     search_fields = ('user__username', 'product__name')
 
+
 @admin.register(Payment)
 class CartItemAdmin(admin.ModelAdmin):
     list_display = ('user_id', 'amount', 'status', 'created_at')
     list_filter = ('user_id', 'amount', 'status', 'created_at')
-

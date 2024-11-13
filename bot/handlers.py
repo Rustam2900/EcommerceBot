@@ -13,7 +13,7 @@ from aiogram.client.default import DefaultBotProperties
 from asgiref.sync import sync_to_async
 from bot.db import (save_user_language, save_user_info_to_db, get_my_orders,
                     get_all_categories, get_user_language, fetch_products_by_category,
-                    get_product_detail,add_to_cart, get_cart_items, create_order,
+                    get_product_detail, add_to_cart, get_cart_items, create_order,
                     link_cart_items_to_order)
 
 from bot.states import UserStates, OrderState
@@ -231,8 +231,6 @@ async def handle_order_start(call: CallbackQuery, state: FSMContext):
     await state.set_state(OrderState.waiting_for_color)
 
 
-
-
 @dp.message(OrderState.waiting_for_color)
 async def process_color(message: Message, state: FSMContext):
     await state.update_data(color=message.text)
@@ -290,6 +288,7 @@ async def show_cart(message: Message):
     inline_buttons.append(InlineKeyboardButton(text="Buyurtma berish", callback_data=f"confirm_order"))
     inline_kb.inline_keyboard = [inline_buttons[i:i + 2] for i in range(0, len(inline_buttons), 2)]
     await message.answer(message_text, reply_markup=inline_kb)
+
 
 @dp.callback_query(lambda call: call.data == "confirm_order")
 async def confirm_order(call: CallbackQuery):

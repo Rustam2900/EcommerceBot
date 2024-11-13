@@ -3,7 +3,6 @@ from django.conf import settings
 
 
 def create_iyzico_payment(amount, user_id):
-    # API URL'si
     url = f"{settings.IYZIPAY_BASE_URL}/payment/iyzipos"
 
     headers = {
@@ -12,35 +11,34 @@ def create_iyzico_payment(amount, user_id):
     }
 
     data = {
-        "locale": "tr",  # Til
-        "price": str(amount),  # To'lov miqdori
-        "paidPrice": str(amount),  # To'lov miqdori
-        "currency": "TRY",  # Valyuta
+        "locale": "tr",
+        "price": str(amount),
+        "paidPrice": str(amount),
+        "currency": "TRY",
         "paymentCard": {
-            "cardHolderName": "Foydalanuvchi Ismi",  # Foydalanuvchi ismi
-            "cardNumber": "5528790000000008",  # Kredit karta raqami (real bo'lmasligi kerak)
-            "expireMonth": "12",  # Karta amal qilish muddati
-            "expireYear": "2030",  # Karta amal qilish yili
-            "cvc": "123",  # CVC
-            "registerCard": "0"  # Karta ro'yxatdan o'tkazilishi
+            "cardHolderName": "Foydalanuvchi Ismi",
+            "cardNumber": "5528790000000008",
+            "expireMonth": "12",
+            "expireYear": "2030",
+            "cvc": "123",
+            "registerCard": "0"
         },
         "buyer": {
-            "id": str(user_id),  # Foydalanuvchi identifikatori
-            "name": "Foydalanuvchi Ismi",  # Foydalanuvchi ismi
-            "surname": "Foydalanuvchi Familiyasi",  # Foydalanuvchi familiyasi
-            "gsmNumber": "+998901234567",  # Telefon raqami
-            "email": "foydalanuvchi@example.com",  # Email
-            "identityNumber": "12345678901",  # Shaxsiy raqam
-            "lastLoginDate": "2024-11-04 12:00:00",  # Oxirgi kirish sanasi
-            "registrationDate": "2024-01-01 10:00:00",  # Ro'yxatdan o'tgan sanasi
-            "registrationAddress": "Manzil",  # Ro'yxatdan o'tgan manzil
-            "ip": "85.34.78.112",  # IP manzil
-            "city": "Toshkent",  # Shahar
-            "country": "O'zbekiston",  # Mamlakat
-            "zipCode": "100000"  # Pochta indeksi
+            "id": str(user_id),
+            "name": "Foydalanuvchi Ismi",
+            "surname": "Foydalanuvchi Familiyasi",
+            "gsmNumber": "+998901234567",
+            "email": "foydalanuvchi@example.com",
+            "identityNumber": "12345678901",
+            "lastLoginDate": "2024-11-04 12:00:00",
+            "registrationDate": "2024-01-01 10:00:00",
+            "registrationAddress": "Manzil",
+            "ip": "85.34.78.112",
+            "city": "Toshkent",
+            "country": "O'zbekiston",
+            "zipCode": "100000"
         }
     }
 
-    # So'rovni yuborish
     response = requests.post(url, json=data, headers=headers)
-    return response.json()  # Javobni qaytarish
+    return response.json()
