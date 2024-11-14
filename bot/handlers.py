@@ -117,10 +117,11 @@ async def contact_us(message: Message):
     user_lang = user_languages.get(user_id, 'en')
 
     contact_info = f"{default_languages[user_lang]['contact_us']}\n" \
-                   f"Address: Your Address Here\n" \
-                   f"Email: Contact Email Here\n" \
-                   f"Phone: Your Phone Number Here\n" \
-                   f"Working Hours: Your Working Hours Here"
+                   f"Address: UZB\n" \
+                   f"Email: jumanazarustam.com\n" \
+                   f"Phone: +998 93 068 29 11\n" \
+                   f"Working Hours: Tashkent \n" \
+                   f"telegram: @Jumanazarov_Rustam"
 
     await message.answer(contact_info)
 
@@ -143,6 +144,7 @@ async def get_orders(message: Message):
     sorted_orders = sorted(my_orders, key=lambda order: order.created_at, reverse=True)
 
     for order in sorted_orders:
+        msg = ""
         msg += f"Order #{order.id}\n"
         msg += f"Status: {order.get_status_display()}\n"
         msg += f"Address: {order.address}\n"
@@ -151,7 +153,7 @@ async def get_orders(message: Message):
         msg += f"Created At: {order.created_at.strftime('%Y-%m-%d %H:%M:%S')}\n"
         msg += "----------------------------\n"
 
-    await message.answer(text=f"{default_languages[user_lang]['order']}\n {msg}")
+        await message.answer(text=f"{default_languages[user_lang]['order']}\n{msg}")
 
 
 @dp.message(F.text.in_(["Categories", "Категории"]))
@@ -171,7 +173,7 @@ async def get_categories(message: Message):
         inline_buttons.append(InlineKeyboardButton(text=category_name, callback_data=f"category_{category.id}"))
     inline_kb.inline_keyboard = [inline_buttons[i:i + 2] for i in range(0, len(inline_buttons), 2)]
     await message.answer(
-        text="Please select a category:",
+        text=default_languages[user_lang]['category_select'],
         reply_markup=inline_kb
     )
 
@@ -191,7 +193,7 @@ async def handle_products_by_category(call: CallbackQuery):
         inline_buttons.append(InlineKeyboardButton(text=product_name, callback_data=f"product_{product.id}"))
 
     inline_kb.inline_keyboard = [inline_buttons[i:i + 2] for i in range(0, len(inline_buttons), 2)]
-    await call.message.edit_text("Mahsulotlar:", reply_markup=inline_kb)
+    await call.message.edit_text(text=default_languages[user_lang]['products'], reply_markup=inline_kb)
 
 
 @dp.callback_query(lambda call: call.data.startswith("product_"))
@@ -203,19 +205,20 @@ async def handle_product_detail(call: CallbackQuery):
     product = await get_product_detail(product_id)
 
     product_name = product.name_ru if user_lang == 'ru' else product.name_en
-    description = product.description or "Tavsif mavjud emas"
+    description = product.description or "not"
     message_text = (
-        f"📦 Mahsulot: {product_name}\n\n"
-        f"📄 Tavsif: {description}\n"
-        f"💲 Narxi: {product.price} so'm\n"
-        f"📏 O'lchami: {product.size or 'Mavjud emas'}\n"
-        f"🎨 Rangi: {product.color or 'Mavjud emas'}\n"
-        f"🚚 Yetkazib berish vaqti: {product.delivery_time or 'Mavjud emas'}"
+        f"📦 {default_languages[user_lang]['products']}: {product_name}\n\n"
+        f"📄 {default_languages[user_lang]['products_description']}: {description}\n"
+        f"💲 {default_languages[user_lang]['products_price']}: {product.price} USD\n"
+        f"📏 {default_languages[user_lang]['products_size']}: {product.size or 'not'}\n"
+        f"🎨 {default_languages[user_lang]['products_ranks']}: {product.color or 'not'}\n"
+        f"🚚 {default_languages[user_lang]['delivery_time']} {product.delivery_time or 'not'}"
     )
 
     inline_kb = InlineKeyboardMarkup(row_width=1, inline_keyboard=[])
     inline_buttons = []
-    inline_buttons.append(InlineKeyboardButton(text="Buyurtma berish", callback_data=f"order_{product.id}"))
+    inline_buttons.append(
+        InlineKeyboardButton(text=default_languages[user_lang]['place_order'], callback_data=f"order_{product.id}"))
     inline_kb.inline_keyboard = [inline_buttons[i:i + 2] for i in range(0, len(inline_buttons), 2)]
 
     await call.message.edit_text(message_text, reply_markup=inline_kb)
@@ -223,8 +226,10 @@ async def handle_product_detail(call: CallbackQuery):
 
 @dp.callback_query(lambda call: call.data.startswith("order_"))
 async def handle_order_start(call: CallbackQuery, state: FSMContext):
+    user_id = call.from_user.id
+    user_lang = await get_user_language(user_id)
     product_id = int(call.data.split("_")[1])
-    await call.message.answer("Mahsulot rangi kiriting:")
+    await call.message.answer(text=default_languages[user_lang]['products_ranks_enter'])
 
     await state.update_data(product_id=product_id)
     await state.set_state(OrderState.waiting_for_color)
@@ -232,20 +237,26 @@ async def handle_order_start(call: CallbackQuery, state: FSMContext):
 
 @dp.message(OrderState.waiting_for_color)
 async def process_color(message: Message, state: FSMContext):
+    user_id = message.from_user.id
+    user_lang = await get_user_language(user_id)
     await state.update_data(color=message.text)
-    await message.answer("Mahsulot o'lchamini kiriting:")
+    await message.answer(text=default_languages[user_lang]['products_size_enter'])
     await state.set_state(OrderState.waiting_for_size)
 
 
 @dp.message(OrderState.waiting_for_size)
 async def process_size(message: Message, state: FSMContext):
+    user_id = message.from_user.id
+    user_lang = await get_user_language(user_id)
     await state.update_data(size=message.text)
-    await message.answer("Mahsulot miqdorini kiriting:")
+    await message.answer(text=default_languages[user_lang]['products_quantity_enter'])
     await state.set_state(OrderState.waiting_for_quantity)
 
 
 @dp.message(OrderState.waiting_for_quantity)
 async def process_quantity(message: Message, state: FSMContext):
+    user_id = message.from_user.id
+    user_lang = await get_user_language(user_id)
     data = await state.get_data()
     quantity = int(message.text)
     print("quantity: ", quantity)
@@ -261,47 +272,43 @@ async def process_quantity(message: Message, state: FSMContext):
         quantity=quantity
     )
 
-    await message.answer("Mahsulot savatchaga qo'shildi!")
+    await message.answer(default_languages[user_lang]['product_add_cart'])
     await state.clear()
 
 
 @dp.message(F.text.in_(["basket", "корзина"]))
-async def show_cart(message: Message, state: FSMContext):
+async def show_cart(message: Message):
     user_id = message.from_user.id
+    user_lang = await get_user_language(user_id)
     cart_items = await get_cart_items(user_id)
 
     if not cart_items:
-        await message.answer("Savatchangiz bo'sh.")
+        await message.answer(default_languages[user_lang]['product_not_cart'])
         return
 
-    message_text = "Sizning savatchangiz:\n\n"
+    message_text = f"{default_languages[user_lang]['product_shopping_cart']}\n\n"
     for item in cart_items:
         message_text += (
             f"📦 {item.product.name_ru} - {item.quantity} dona\n"
-            f"🎨 Rang: {item.color}, 📏 O'lcham: {item.size}\n"
-            f"💲 Narx: {item.amount} so'm\n\n"
+            f"🎨 {default_languages[user_lang]['products_ranks']}: {item.color},\n"
+            f"📏 {default_languages[user_lang]['products_size']} {item.size}\n"
+            f"💲 {default_languages[user_lang]['products_price']} {item.amount} USD\n\n"
         )
 
     inline_kb = InlineKeyboardMarkup(row_width=1, inline_keyboard=[])
     inline_buttons = []
-    inline_buttons.append(InlineKeyboardButton(text="Buyurtma berish", callback_data=f"confirm_order"))
+    inline_buttons.append(
+        InlineKeyboardButton(text=default_languages[user_lang]['place_order'], callback_data=f"confirm_order"))
     inline_kb.inline_keyboard = [inline_buttons[i:i + 2] for i in range(0, len(inline_buttons), 2)]
     await message.answer(message_text, reply_markup=inline_kb)
-    # await state.set_state(OrderAddress.location)
 
 
-# @dp.callback_query(lambda call: call.data == "confirm_order")
-# async def confirm_order(call: CallbackQuery, state: FSMContext):
-#     user_id = call.from_user.id
-#     order = await create_order(user_id)
-#
-#     await link_cart_items_to_order(user_id, order)
-#     await call.message.answer("Buyurtmangiz qabul qilindi!")
-
-def create_location_keyboard():
-    location_button = KeyboardButton(text="Joylashuvni yuborish", request_location=True)
+async def create_location_keyboard(message: Message):
+    user_id = message.from_user.id
+    user_lang = await get_user_language(user_id)
+    location_button = KeyboardButton(text=default_languages[user_lang]['send_location'], request_location=True)
     location_keyboard = ReplyKeyboardMarkup(
-        keyboard=[[location_button]],  # Keyboard layout formatini qo'shamiz
+        keyboard=[[location_button]],
         resize_keyboard=True,
         one_time_keyboard=True
     )
@@ -310,8 +317,10 @@ def create_location_keyboard():
 
 @dp.callback_query(lambda c: c.data == "confirm_order")
 async def request_location(callback_query: CallbackQuery, state: FSMContext):
-    await callback_query.message.answer("Buyurtmani tasdiqlash uchun joylashuvingizni yuboring.",
-                                        reply_markup=create_location_keyboard())
+    user_id = callback_query.from_user.id
+    user_lang = await get_user_language(user_id)
+    await callback_query.message.answer(text=default_languages[user_lang]['send_location_order'],
+                                        reply_markup=await create_location_keyboard(callback_query.message))
     await state.set_state(OrderAddress.location)
     await callback_query.answer()
 
@@ -319,6 +328,7 @@ async def request_location(callback_query: CallbackQuery, state: FSMContext):
 @dp.message(F.content_type == ContentType.LOCATION, OrderAddress.location)
 async def save_location_and_create_order(message: Message, state: FSMContext):
     user_id = message.from_user.id
+    user_lang = await get_user_language(user_id)
     latitude = message.location.latitude
     longitude = message.location.longitude
 
@@ -326,5 +336,5 @@ async def save_location_and_create_order(message: Message, state: FSMContext):
     await link_cart_items_to_order(user_id, order)
     await update_order_location(order, latitude, longitude)
 
-    await message.answer("Buyurtmangiz qabul qilindi va saqlandi.")
+    await message.answer(text=default_languages[user_lang]['order_save'])
     await state.clear()
