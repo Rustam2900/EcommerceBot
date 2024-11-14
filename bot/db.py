@@ -123,10 +123,10 @@ def link_cart_items_to_order(user_id, order):
 
 @sync_to_async
 def update_order_location(order, latitude, longitude):
-    user = order.user  # Assuming 'order' is linked to a user through a ForeignKey
+    user = order.user
     order.latitude = latitude
     order.longitude = longitude
-    order.phone_number = user.phone_number  # Save the user's phone number to the order
+    order.phone_number = user.phone_number
 
     google_maps_link = f"https://www.google.com/maps?q={latitude},{longitude}"
 
