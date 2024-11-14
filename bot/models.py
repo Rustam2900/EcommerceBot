@@ -17,6 +17,9 @@ class CustomUser(models.Model):
         verbose_name = _("User")
         verbose_name_plural = _("Users")
 
+    def __str__(self):
+        return self.full_name
+
 
 class Category(models.Model):
     name = models.CharField(_("name"), max_length=100, unique=True)
@@ -49,7 +52,7 @@ class Order(models.Model):
         CANCELLED = 'CANCELLED', _('Cancelled')
 
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='orders')
-    status = models.CharField(_("status"), max_length=20, choices=OrderStatus.choices, default=OrderStatus.CREATED)
+    status = models.CharField(max_length=20, choices=OrderStatus.choices, default=OrderStatus.CREATED)
     address = models.CharField(_('address'), max_length=255)
     latitude = models.DecimalField(max_digits=10, decimal_places=8, blank=True, null=True)
     longitude = models.DecimalField(max_digits=11, decimal_places=8, blank=True, null=True)

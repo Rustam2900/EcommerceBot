@@ -3,21 +3,20 @@ from aiogram import Dispatcher, F, Bot
 from aiogram.enums import ParseMode
 from aiogram.filters import CommandStart
 from aiogram.fsm.context import FSMContext
-from aiogram.types import Message, CallbackQuery
+from aiogram.types import Message, CallbackQuery, ReplyKeyboardMarkup, KeyboardButton, ContentType
 from bot.keyboards import get_languages, get_main_menu
 
 from bot.utils import default_languages, user_languages, introduction_template, \
-    local_user, fix_phone, order_text
+    fix_phone
 from django.conf import settings
 from aiogram.client.default import DefaultBotProperties
-from asgiref.sync import sync_to_async
 from bot.db import (save_user_language, save_user_info_to_db, get_my_orders,
                     get_all_categories, get_user_language, fetch_products_by_category,
                     get_product_detail, add_to_cart, get_cart_items, create_order,
-                    link_cart_items_to_order)
+                    link_cart_items_to_order, update_order_location)
 
-from bot.states import UserStates, OrderState
-from bot.models import CustomUser, Category, Order
+from bot.states import UserStates, OrderState, OrderAddress
+from bot.models import CustomUser
 
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
@@ -267,7 +266,7 @@ async def process_quantity(message: Message, state: FSMContext):
 
 
 @dp.message(F.text.in_(["basket", "корзина"]))
-async def show_cart(message: Message):
+async def show_cart(message: Message, state: FSMContext):
     user_id = message.from_user.id
     cart_items = await get_cart_items(user_id)
 
@@ -288,12 +287,44 @@ async def show_cart(message: Message):
     inline_buttons.append(InlineKeyboardButton(text="Buyurtma berish", callback_data=f"confirm_order"))
     inline_kb.inline_keyboard = [inline_buttons[i:i + 2] for i in range(0, len(inline_buttons), 2)]
     await message.answer(message_text, reply_markup=inline_kb)
+    # await state.set_state(OrderAddress.location)
 
 
-@dp.callback_query(lambda call: call.data == "confirm_order")
-async def confirm_order(call: CallbackQuery):
-    user_id = call.from_user.id
+# @dp.callback_query(lambda call: call.data == "confirm_order")
+# async def confirm_order(call: CallbackQuery, state: FSMContext):
+#     user_id = call.from_user.id
+#     order = await create_order(user_id)
+#
+#     await link_cart_items_to_order(user_id, order)
+#     await call.message.answer("Buyurtmangiz qabul qilindi!")
+
+def create_location_keyboard():
+    location_button = KeyboardButton(text="Joylashuvni yuborish", request_location=True)
+    location_keyboard = ReplyKeyboardMarkup(
+        keyboard=[[location_button]],  # Keyboard layout formatini qo'shamiz
+        resize_keyboard=True,
+        one_time_keyboard=True
+    )
+    return location_keyboard
+
+
+@dp.callback_query(lambda c: c.data == "confirm_order")
+async def request_location(callback_query: CallbackQuery, state: FSMContext):
+    await callback_query.message.answer("Buyurtmani tasdiqlash uchun joylashuvingizni yuboring.",
+                                        reply_markup=create_location_keyboard())
+    await state.set_state(OrderAddress.location)
+    await callback_query.answer()
+
+
+@dp.message(F.content_type == ContentType.LOCATION, OrderAddress.location)
+async def save_location_and_create_order(message: Message, state: FSMContext):
+    user_id = message.from_user.id
+    latitude = message.location.latitude
+    longitude = message.location.longitude
+
     order = await create_order(user_id)
-
     await link_cart_items_to_order(user_id, order)
-    await call.message.answer("Buyurtmangiz qabul qilindi!")
+    await update_order_location(order, latitude, longitude)
+
+    await message.answer("Buyurtmangiz qabul qilindi va saqlandi.")
+    await state.clear()

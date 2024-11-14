@@ -19,7 +19,7 @@ class ProductTranslation(TranslationOptions):
 
 @register(models.Order)
 class ProductTranslation(TranslationOptions):
-    fields = ('status', 'address')
+    fields = ('address',)
 
 
 @register(models.CartItem)

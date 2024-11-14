@@ -6,8 +6,12 @@ class UserStates(StatesGroup):
     contact = State()
 
 
-
 class OrderState(StatesGroup):
     waiting_for_color = State()
     waiting_for_size = State()
     waiting_for_quantity = State()
+
+
+class OrderAddress(StatesGroup):
+    location = State()
+
