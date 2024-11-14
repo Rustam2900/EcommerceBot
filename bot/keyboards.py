@@ -14,9 +14,14 @@ def get_main_menu(language):
     main_menu_keyboard = ReplyKeyboardMarkup(keyboard=[
         [
             KeyboardButton(text=default_languages[language]['categories'], ),
-            KeyboardButton(text=default_languages[language]['contact_us']),
+            KeyboardButton(text=default_languages[language]['contact_us'])
+        ],
+        [
             KeyboardButton(text=default_languages[language]['my_orders']),
             KeyboardButton(text=default_languages[language]['cart']),
+        ],
+        [
+            KeyboardButton(text=default_languages[language]['settings'])
         ]
     ], resize_keyboard=True)
     return main_menu_keyboard

@@ -4,6 +4,8 @@ from aiogram.enums import ParseMode
 from aiogram.filters import CommandStart
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, CallbackQuery, ReplyKeyboardMarkup, KeyboardButton, ContentType
+from asgiref.sync import sync_to_async
+
 from bot.keyboards import get_languages, get_main_menu
 
 from bot.utils import default_languages, user_languages, introduction_template, \
@@ -338,3 +340,38 @@ async def save_location_and_create_order(message: Message, state: FSMContext):
 
     await message.answer(text=default_languages[user_lang]['order_save'])
     await state.clear()
+
+
+@dp.message(F.text.in_(["⚙️ Настройки", "⚙️ Sozlamalar"]))
+async def settings(message: Message):
+    user_id = message.from_user.id
+    user_lang = await get_user_language(user_id)
+    await message.answer(text=default_languages[user_lang]['select_language'], reply_markup=get_languages("setLang"))
+
+
+@dp.callback_query(F.data.startswith("setLang"))
+async def change_language(call: CallbackQuery):
+    user_id = call.from_user.id
+    user_lang = call.data.split("_")[1]
+    user_languages[call.from_user.id] = user_lang
+
+    await sync_to_async(update_user_language)(user_id, user_lang)
+
+    await call.message.answer(
+        text=default_languages[user_lang]['successful_changed'],
+        reply_markup=get_main_menu(user_lang)
+    )
+
+
+def update_user_language(user_id, user_lang):
+    try:
+        user_language = CustomUser.objects.get(telegram_id=user_id)
+
+        if user_lang == 'ru':
+            user_language.user_lang = 'en'
+        else:
+            user_language.user_lang = user_lang
+
+        user_language.save()
+    except CustomUser.DoesNotExist:
+        CustomUser.objects.create(telegram_id=user_id, user_lang=user_lang)
