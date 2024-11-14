@@ -127,4 +127,8 @@ def update_order_location(order, latitude, longitude):
     order.latitude = latitude
     order.longitude = longitude
     order.phone_number = user.phone_number  # Save the user's phone number to the order
+
+    google_maps_link = f"https://www.google.com/maps?q={latitude},{longitude}"
+
+    order.address = f"Google Maps: {google_maps_link}"
     order.save()

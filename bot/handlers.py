@@ -83,7 +83,8 @@ async def company_contact(message: Message, state: FSMContext):
 
     if not phone_number_validator.match(phone):
         error_message = default_languages[user_lang].get(
-            "enter_number", "Please enter a valid phone number format: +998 XX XXX XX XX"
+            "enter_number", "Please enter a valid phone number format: +90 555 123 45 67 "
+
         )
         await message.answer(error_message)
         return
